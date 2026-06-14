@@ -1,0 +1,40 @@
+type User {
+    id: ID!
+    name: String
+    username: String!
+    email: String
+    tipe_akun: String!
+    is_banned: Boolean!
+    last_login_at: String
+    is_admin: Boolean!
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+type LogoutResponse {
+    status: String!
+    message: String!
+}
+
+type Query {
+    me: User @auth @guard(with: ["sanctum"])
+}
+
+type Mutation {
+    register(
+        name: String
+        username: String!
+        email: String!
+        password: String!
+    ): AuthPayload!
+
+    login(
+        email: String!
+        password: String!
+    ): AuthPayload!
+
+    logout: LogoutResponse! @guard(with: ["sanctum"])
+}

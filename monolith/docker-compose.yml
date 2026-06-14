@@ -29,10 +29,11 @@ services:
     container_name: keuangan-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: ${DB_DATABASE:-keuangan_laravel}
-      MYSQL_USER: ${DB_USERNAME:-laravel}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-laravel}
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_password
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
