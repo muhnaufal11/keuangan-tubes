@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Pastikan .env ada sebelum di-edit
+[ -f .env ] || cp .env.example .env
+# Pastikan APP_KEY terisi (kalau belum)
+grep -q "^APP_KEY=base64" .env || php artisan key:generate --force
+
 echo "==> Applying Docker environment overrides to .env..."
 # Override .env with actual Docker environment variables
 # (Local .env may be mounted via volume with wrong host values)
