@@ -1,0 +1,16 @@
+* text=auto
+
+# Shell scripts MUST use LF, else the container fails with
+# "exec docker-entrypoint.sh: no such file or directory"
+*.sh text eol=lf
+docker-entrypoint.sh text eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore

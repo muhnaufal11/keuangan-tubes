@@ -1,0 +1,408 @@
+{
+	"info": {
+		"_postman_id": "c3938b89-a2a4-49a6-be58-29ef31d044fa",
+		"name": "Keuangan App - Transaction Service",
+		"description": "Postman Collection for Keuangan App Transaction Microservice (REST & GraphQL API)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "REST API",
+			"item": [
+				{
+					"name": "Create Transaction - Income",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"income\",\n    \"rekening_id\": 1,\n    \"kategori\": \"Gaji\",\n    \"amount\": 5000000,\n    \"deskripsi\": \"Gaji bulanan Utama\",\n    \"tanggal\": \"2026-06-15\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction - Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"expense\",\n    \"rekening_id\": 1,\n    \"kategori\": \"Makanan\",\n    \"amount\": 150000,\n    \"deskripsi\": \"Makan siang di restoran\",\n    \"tanggal\": \"2026-06-15\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transactions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions?start_date=2026-06-01&end_date=2026-06-30",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2026-06-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2026-06-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions/1?jenis=pemasukan",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"1"
+							],
+							"query": [
+								{
+									"key": "jenis",
+									"value": "pemasukan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions/1?jenis=pemasukan",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"1"
+							],
+							"query": [
+								{
+									"key": "jenis",
+									"value": "pemasukan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/dashboard/summary",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"dashboard",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GraphQL API",
+			"item": [
+				{
+					"name": "GraphQL Query Transactions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  transactions {\n    id\n    user_id\n    rekening_id\n    kategori\n    deskripsi\n    jumlah\n    tanggal\n    jenis\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/graphql",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GraphQL Query Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  summary {\n    bulan_ini {\n      periode\n      pemasukan\n      pengeluaran\n    }\n    total_saldo\n    detail_rekening {\n      id\n      nama_rekening\n      tipe\n      saldo\n      minimum_saldo\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/graphql",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GraphQL Mutation CreateTransaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  createTransaction(\n    type: \"income\"\n    rekening_id: 1\n    kategori: \"Bonus\"\n    amount: 1000000\n    deskripsi: \"Bonus performa\"\n    tanggal: \"2026-06-15\"\n  ) {\n    id\n    user_id\n    rekening_id\n    kategori\n    deskripsi\n    jumlah\n    tanggal\n    jenis\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/graphql",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8003",
+			"type": "string"
+		},
+		{
+			"key": "TOKEN",
+			"value": "insert_token_here",
+			"type": "string"
+		}
+	]
+}

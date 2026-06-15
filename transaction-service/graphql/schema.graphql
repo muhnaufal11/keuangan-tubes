@@ -1,0 +1,50 @@
+type Transaction {
+    id: ID!
+    user_id: Int!
+    rekening_id: Int!
+    kategori: String!
+    deskripsi: String
+    jumlah: Float!
+    tanggal: String!
+    jenis: String!
+}
+
+type DashboardBulanIni {
+    periode: String!
+    pemasukan: Float!
+    pengeluaran: Float!
+}
+
+type AccountDetail {
+    id: ID!
+    nama_rekening: String!
+    tipe: String!
+    saldo: Float!
+    minimum_saldo: Float!
+}
+
+type DashboardSummary {
+    bulan_ini: DashboardBulanIni!
+    total_saldo: Float!
+    detail_rekening: [AccountDetail!]
+}
+
+type Query {
+    "Daftar transaksi milik user yang sedang login (token divalidasi via remote.auth)."
+    transactions: [Transaction!]! @field(resolver: "App\\GraphQL\\Queries\\Transactions")
+
+    "Ringkasan dashboard (aggregasi local + balance remote)."
+    summary: DashboardSummary! @field(resolver: "App\\GraphQL\\Queries\\Summary")
+}
+
+type Mutation {
+    "Membuat transaksi baru (income atau expense)."
+    createTransaction(
+        type: String!
+        rekening_id: Int!
+        kategori: String!
+        amount: Float!
+        deskripsi: String
+        tanggal: String!
+    ): Transaction! @field(resolver: "App\\GraphQL\\Mutations\\CreateTransaction")
+}

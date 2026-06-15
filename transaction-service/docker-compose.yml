@@ -1,0 +1,85 @@
+services:
+  # Transaction Service Database (PostgreSQL)
+  transaction-db:
+    image: postgres:16
+    container_name: transaction-db
+    restart: always
+    environment:
+      POSTGRES_USER: zenith
+      POSTGRES_PASSWORD: zenith
+      POSTGRES_DB: transaction_db
+    ports:
+      - "54323:5432" # Mapped on host to avoid conflict with local postgres
+    volumes:
+      - transaction_db_data:/var/lib/postgresql/data
+    networks:
+      - keuangan-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zenith -d transaction_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Transaction Service App
+  transaction-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transaction-service
+    ports:
+      - "8003:8000"
+    depends_on:
+      transaction-db:
+        condition: service_healthy
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/bootstrap/cache
+    environment:
+      - APP_ENV=local
+      - APP_KEY=base64:m3o+1Lm3xFyQMU3CLlQH2tM+JTgiYOzqaN86R2IvJJg=
+      - APP_DEBUG=true
+      - DB_CONNECTION=pgsql
+      - DB_HOST=transaction-db
+      - DB_PORT=5432
+      - DB_DATABASE=transaction_db
+      - DB_USERNAME=zenith
+      - DB_PASSWORD=zenith
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_CLIENT=predis
+      - REDIS_PREFIX=
+      - NOTIFICATIONS_QUEUE=queue:notifications
+      - AUTH_SERVICE_URL=http://auth-service:8000
+      - ACCOUNT_SERVICE_URL=http://account-service:8000
+    networks:
+      - keuangan-net
+    restart: always
+
+  # Hasura GraphQL Engine
+  hasura:
+    image: hasura/graphql-engine:v2.38.0
+    container_name: hasura
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      transaction-db:
+        condition: service_healthy
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://zenith:zenith@transaction-db:5432/transaction_db
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://zenith:zenith@transaction-db:5432/transaction_db
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+    networks:
+      - keuangan-net
+
+volumes:
+  transaction_db_data:
+    driver: local
+
+# Memakai network yang sama dengan auth-service + redis + account-service.
+networks:
+  keuangan-net:
+    external: true
+    name: keuangan-net
