@@ -41,6 +41,6 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port
 EXPOSE 8000
 
-# Copy and set entrypoint script
-RUN chmod +x docker-entrypoint.sh
+# Copy and set entrypoint script (strip CRLF in case it was saved on Windows)
+RUN sed -i 's/\r$//' docker-entrypoint.sh && chmod +x docker-entrypoint.sh
 ENTRYPOINT ["/var/www/html/docker-entrypoint.sh"]
