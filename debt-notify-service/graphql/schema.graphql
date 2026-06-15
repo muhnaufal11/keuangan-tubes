@@ -1,0 +1,45 @@
+type Debt {
+    id: ID!
+    user_id: Int!
+    jenis: String!
+    pemberi: String
+    deskripsi: String!
+    jumlah: Float!
+    sisa_jumlah: Float!
+    keterangan: String
+    tanggal: String
+    status: String!
+    jatuh_tempo: String
+    riwayat: [DebtHistory!]! @hasMany
+}
+
+type DebtHistory {
+    id: ID!
+    utang_id: Int!
+    jumlah: Float!
+    tanggal: String!
+    keterangan: String
+    created_at: String
+    updated_at: String
+}
+
+type Notification {
+    id: ID!
+    user_id: Int
+    title: String!
+    message: String!
+    type: String!
+    read_at: String
+    created_at: String
+    updated_at: String
+}
+
+type Query {
+    debts: [Debt!]! @field(resolver: "App\\GraphQL\\Queries\\Debts")
+    notifications: [Notification!]! @field(resolver: "App\\GraphQL\\Queries\\Notifications")
+}
+
+type Mutation {
+    payDebt(id: ID!, jumlah_bayar: Float!): Debt! @field(resolver: "App\\GraphQL\\Mutations\\PayDebt")
+    markRead(id: ID!): Notification! @field(resolver: "App\\GraphQL\\Mutations\\MarkRead")
+}
