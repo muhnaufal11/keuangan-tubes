@@ -22,6 +22,7 @@ class Transactions
             return $item;
         });
 
-        return $pemasukan->merge($pengeluaran)->sortByDesc('tanggal')->values();
+        // concat (bukan merge): merge pada Eloquent Collection men-dedup berdasarkan primary key.
+        return $pemasukan->concat($pengeluaran)->sortByDesc('tanggal')->values();
     }
 }

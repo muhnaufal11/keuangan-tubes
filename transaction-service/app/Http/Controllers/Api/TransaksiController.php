@@ -39,7 +39,9 @@ class TransaksiController extends Controller
                 return $item;
             });
 
-        $merged = $pemasukan->merge($pengeluaran)->sortByDesc('tanggal')->values();
+        // concat (bukan merge): merge pada Eloquent Collection men-dedup berdasarkan primary key,
+        // sehingga pemasukan id=1 ketimpa pengeluaran id=1. concat menggabungkan semua baris.
+        $merged = $pemasukan->concat($pengeluaran)->sortByDesc('tanggal')->values();
 
         return response()->json($merged);
     }
