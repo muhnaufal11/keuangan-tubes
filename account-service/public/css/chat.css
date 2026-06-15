@@ -1,0 +1,122 @@
+/* Chat Container Styles */
+.chat-container {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+/* Chat Message Styles */
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    max-width: 80%;
+    clear: both;
+}
+
+.chat-message.self {
+    align-self: flex-end;
+    float: right;
+    /* Fallback */
+    margin-left: auto;
+    /* Push to right in flex container */
+    align-items: flex-end;
+}
+
+.chat-message.other {
+    align-self: flex-start;
+    float: left;
+    /* Fallback */
+    margin-right: auto;
+    align-items: flex-start;
+}
+
+.chat-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* User (Blue) */
+.chat-message.self .chat-bubble {
+    background-color: #007bff;
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+/* Admin/Other (Gray) */
+.chat-message.other .chat-bubble {
+    background-color: #e9ecef;
+    color: #333;
+    border-bottom-left-radius: 2px;
+}
+
+.chat-message .sender {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+
+.chat-message.self .sender {
+    text-align: right;
+    margin-right: 4px;
+    display: none;
+    /* Hide sender name for self usually */
+}
+
+.chat-message .timestamp {
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 4px;
+    opacity: 0.8;
+    text-align: right;
+}
+
+.chat-message.self .timestamp {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-message.other .timestamp {
+    color: #888;
+}
+
+/* Popup specific styles */
+#help-popup,
+#admin-help-popup {
+    /* Fixed positioning is handled in blade for simplicity or can be moved here */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chat-popup-body {
+    height: 220px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    /* Important for align-self to work */
+}
+
+.chat-popup-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-popup-body::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+#help-toggle-btn {
+    transition: transform 0.2s;
+}
+
+#help-toggle-btn:hover {
+    transform: scale(1.1);
+}

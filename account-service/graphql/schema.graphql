@@ -1,0 +1,30 @@
+"Akun / rekening milik user."
+type Account {
+    id: ID!
+    user_id: Int!
+    nama_rekening: String!
+    no_rekening: String
+    tipe: String!
+    saldo: Float!
+    minimum_saldo: Float!
+}
+
+type Category {
+    id: ID!
+    nama_kategori: String!
+}
+
+type Query {
+    "Daftar rekening milik user yang sedang login (token divalidasi via remote.auth)."
+    accounts: [Account!]! @field(resolver: "App\\GraphQL\\Queries\\Accounts")
+    account(id: ID!): Account @field(resolver: "App\\GraphQL\\Queries\\AccountSingle")
+}
+
+type Mutation {
+    createAccount(
+        nama_rekening: String!
+        tipe: String!
+        saldo: Float!
+        no_rekening: String
+    ): Account! @field(resolver: "App\\GraphQL\\Mutations\\CreateAccount")
+}

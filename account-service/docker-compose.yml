@@ -1,0 +1,66 @@
+services:
+  # Account Service Database (terpisah dari service lain)
+  account-db:
+    image: mysql:8.0
+    container_name: account-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: account_db
+    ports:
+      - "33062:3306" # port host beda dari auth-db (33061) agar tidak bentrok
+    volumes:
+      - account_db_data:/var/lib/mysql
+    networks:
+      - keuangan-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Account Service App
+  account-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: account-service
+    ports:
+      - "8002:8000"
+    depends_on:
+      account-db:
+        condition: service_healthy
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/bootstrap/cache
+    environment:
+      - APP_ENV=local
+      - APP_KEY=base64:m3o+1Lm3xFyQMU3CLlQH2tM+JTgiYOzqaN86R2IvJJg=
+      - APP_DEBUG=true
+      - DB_HOST=account-db
+      - DB_PORT=3306
+      - DB_DATABASE=account_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_CLIENT=predis
+      - REDIS_PREFIX=
+      - NOTIFICATIONS_QUEUE=queue:notifications
+      - AUTH_SERVICE_URL=http://auth-service:8000
+    networks:
+      - keuangan-net
+    restart: always
+
+volumes:
+  account_db_data:
+    driver: local
+
+# Memakai network yang sama dengan auth-service + redis.
+# Jalankan auth-service dulu (yang membuat network 'keuangan-net' & container redis),
+# baru `docker compose up -d --build` di folder ini.
+networks:
+  keuangan-net:
+    external: true
+    name: keuangan-net
