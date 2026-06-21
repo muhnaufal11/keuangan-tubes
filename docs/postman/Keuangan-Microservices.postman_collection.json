@@ -1,0 +1,1984 @@
+{
+  "info": {
+    "name": "Keuangan Microservices (IAE)",
+    "_postman_id": "a1b2c3d4-0000-4000-8000-keuangantubes1",
+    "description": "Koleksi uji sistem keuangan microservices: auth, account, transaction, debt-notify + GraphQL + Hasura Cloud. Jalankan folder 0 -> 1 -> 2 -> 3 berurutan; token & id otomatis tersimpan.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Auth Service (:8001)",
+      "item": [
+        {
+          "name": "Register (simpan token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/register",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Daftar user baru. Token otomatis disimpan ke variable {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Penguji\",\n  \"email\": \"penguji{{$timestamp}}@example.com\",\n  \"password\": \"password123\",\n  \"security_question\": \"warna favorit?\",\n  \"security_answer\": \"biru\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.token) { pm.collectionVariables.set('token', j.token); console.log('token saved'); }",
+                  "if (j.user && j.user.id) pm.collectionVariables.set('user_id', j.user.id);",
+                  "pm.test('status ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (simpan token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/login",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Ganti email sesuai user kamu. Token disimpan ke {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"penguji@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.token) { pm.collectionVariables.set('token', j.token); console.log('token saved'); }",
+                  "if (j.user && j.user.id) pm.collectionVariables.set('user_id', j.user.id);",
+                  "pm.test('status ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login ADMIN (simpan admin_token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/login",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Admin hasil seed. Token disimpan ke {{admin_token}} untuk endpoint admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.token) { pm.collectionVariables.set('admin_token', j.token); console.log('admin_token saved'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profil User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/user",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validate Token (dipakai service lain)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/validate-token",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "validate-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/logout",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Password - Get Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/password/question",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "password",
+                "question"
+              ]
+            },
+            "description": "Catatan: field-nya 'identifier' (email/username).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"penguji@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Password - Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/password/reset",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "password",
+                "reset"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"penguji@example.com\",\n  \"security_answer\": \"biru\",\n  \"password\": \"passwordbaru123\",\n  \"password_confirmation\": \"passwordbaru123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/admin/users",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Ban User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/api/auth/admin/users/{{user_id}}/ban",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin",
+                "users",
+                "{{user_id}}",
+                "ban"
+              ]
+            },
+            "description": "Ban user dengan id {{user_id}}. Hati-hati jangan ban admin."
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - me",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/graphql",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"{ me { id email username is_admin } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - login (mutation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{auth_url}}/graphql",
+              "host": [
+                "{{auth_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"mutation { login(email: \\\"admin@example.com\\\", password: \\\"Admin1234\\\") { token user { id is_admin } } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1. Account Service (:8002)",
+      "item": [
+        {
+          "name": "Buat Rekening (simpan rekening_id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_rekening\": \"BCA\",\n  \"tipe\": \"BANK\",\n  \"saldo\": 100000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.data && j.data.id) pm.collectionVariables.set('rekening_id', j.data.id);",
+                  "pm.test('created', function(){ pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buat Rekening ke-2 (utk transfer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_rekening\": \"Dana\",\n  \"tipe\": \"E-WALLET\",\n  \"saldo\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.data && j.data.id) pm.collectionVariables.set('rekening_id_2', j.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Rekening",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Rekening",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts/{{rekening_id}}",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{rekening_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Rekening",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts/{{rekening_id}}",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{rekening_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_rekening\": \"BCA Utama\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cek Saldo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts/{{rekening_id}}/balance",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{rekening_id}}",
+                "balance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adjust Balance - CREDIT (internal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/internal/accounts/{{rekening_id}}/adjust-balance",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "internal",
+                "accounts",
+                "{{rekening_id}}",
+                "adjust-balance"
+              ]
+            },
+            "description": "Dipanggil transaction-service. Idempotent berdasarkan 'ref'.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 50000,\n  \"direction\": \"credit\",\n  \"ref\": \"demo-credit-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adjust Balance - DEBIT saldo kurang (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/internal/accounts/{{rekening_id}}/adjust-balance",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "internal",
+                "accounts",
+                "{{rekening_id}}",
+                "adjust-balance"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 999999999,\n  \"direction\": \"debit\",\n  \"ref\": \"demo-debit-big\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Kategori - Buat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/categories",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_kategori\": \"Bonus\",\n  \"type\": \"income\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Kategori - List (income)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/categories?type=income",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "income"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Kategori - Defaults",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/categories/defaults",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "defaults"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Kategori - Sync Defaults",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/categories/sync-defaults",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "categories",
+                "sync-defaults"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Transfer (atomic + publish event)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/transfers",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "transfers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rekening_sumber_id\": \"{{rekening_id}}\",\n  \"rekening_tujuan_id\": \"{{rekening_id_2}}\",\n  \"jumlah\": 20000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Transfer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/transfers",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "transfers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hapus Rekening",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/api/accounts/{{rekening_id_2}}",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "api",
+                "accounts",
+                "{{rekening_id_2}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - accounts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/graphql",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"{ accounts { id nama_rekening saldo tipe } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - createAccount",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{account_url}}/graphql",
+              "host": [
+                "{{account_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"mutation { createAccount(nama_rekening: \\\"Rek GraphQL\\\", tipe: \\\"BANK\\\", saldo: 50000) { id saldo } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Transaction Service (:8003)",
+      "item": [
+        {
+          "name": "Catat INCOME (saldo naik + event)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/transactions",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "transactions"
+              ]
+            },
+            "description": "Memanggil account-service utk credit saldo, lalu publish transaction.created.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"income\",\n  \"rekening_id\": \"{{rekening_id}}\",\n  \"kategori\": \"Gaji\",\n  \"amount\": 75000,\n  \"tanggal\": \"2026-06-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.id) pm.collectionVariables.set('transaction_id', j.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Catat EXPENSE (saldo turun)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/transactions",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "transactions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"expense\",\n  \"rekening_id\": \"{{rekening_id}}\",\n  \"kategori\": \"Makan\",\n  \"amount\": 25000,\n  \"tanggal\": \"2026-06-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Catat EXPENSE saldo kurang (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/transactions",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "transactions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"expense\",\n  \"rekening_id\": \"{{rekening_id}}\",\n  \"kategori\": \"Makan\",\n  \"amount\": 999999999,\n  \"tanggal\": \"2026-06-15\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Transaksi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/transactions",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Transaksi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/transactions/{{transaction_id}}?jenis=pemasukan",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "{{transaction_id}}"
+              ],
+              "query": [
+                {
+                  "key": "jenis",
+                  "value": "pemasukan"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hapus Transaksi (saldo dikembalikan)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/transactions/{{transaction_id}}?jenis=pemasukan",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "transactions",
+                "{{transaction_id}}"
+              ],
+              "query": [
+                {
+                  "key": "jenis",
+                  "value": "pemasukan"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/api/dashboard/summary",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL manual (Lighthouse) - transactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{transaction_url}}/graphql",
+              "host": [
+                "{{transaction_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"{ transactions { kategori jumlah jenis } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL via HASURA CLOUD (web, cara ke-2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-hasura-admin-secret",
+                "value": "{{hasura_admin_secret}}"
+              }
+            ],
+            "url": {
+              "raw": "{{hasura_url}}/v1/graphql",
+              "host": [
+                "{{hasura_url}}"
+              ],
+              "path": [
+                "v1",
+                "graphql"
+              ]
+            },
+            "description": "Hasura hosted di web. Isi variable {{hasura_admin_secret}} dulu di tab Variables collection.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"{ pemasukan(limit: 5, order_by: {id: desc}) { id kategori jumlah } pengeluaran(limit: 5) { id kategori jumlah } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Debt & Notify Service (:8004)",
+      "item": [
+        {
+          "name": "Buat Utang (simpan debt_id)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deskripsi\": \"Pinjam ke Budi\",\n  \"jumlah\": 100000,\n  \"jenis\": \"utang\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.data && j.data.id) pm.collectionVariables.set('debt_id', j.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buat Piutang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deskripsi\": \"Dipinjam Andi\",\n  \"jumlah\": 50000,\n  \"jenis\": \"piutang\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Utang & Piutang",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Utang",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts/{{debt_id}}",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts",
+                "{{debt_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bayar Utang (publish event)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts/{{debt_id}}/payments",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts",
+                "{{debt_id}}",
+                "payments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jumlah_bayar\": 40000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Riwayat Bayar Utang",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts/{{debt_id}}/history",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts",
+                "{{debt_id}}",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hapus Utang",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/debts/{{debt_id}}",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "debts",
+                "{{debt_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Notifikasi - List (hasil worker/broker)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/notifications",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "notifications"
+              ]
+            },
+            "description": "Notifikasi dibuat otomatis oleh worker dari event. Jalankan setelah transaksi/transfer/bayar utang."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "var arr = Array.isArray(j) ? j : (j.data || []);",
+                  "if (arr.length) pm.collectionVariables.set('notification_id', arr[0].id);",
+                  "console.log('notif count: ' + arr.length);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Notifikasi - Tandai Dibaca",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/notifications/{{notification_id}}/read",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "{{notification_id}}",
+                "read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Notifikasi - Hapus",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/notifications/{{notification_id}}",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "{{notification_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Tips - List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/tips",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "tips"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Broadcast Notifikasi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/api/notifications/broadcast",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "broadcast"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Pengumuman\",\n  \"message\": \"Halo semua user!\",\n  \"type\": \"info\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/graphql",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"{ notifications { id title message } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - debts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{debt_url}}/graphql",
+              "host": [
+                "{{debt_url}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"query\": \"{ debts { id deskripsi jumlah } }\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "auth_url",
+      "value": "http://localhost:8001"
+    },
+    {
+      "key": "account_url",
+      "value": "http://localhost:8002"
+    },
+    {
+      "key": "transaction_url",
+      "value": "http://localhost:8003"
+    },
+    {
+      "key": "debt_url",
+      "value": "http://localhost:8004"
+    },
+    {
+      "key": "hasura_url",
+      "value": "https://magnetic-koala-70.hasura.app"
+    },
+    {
+      "key": "hasura_admin_secret",
+      "value": "ISI_ADMIN_SECRET_HASURA_KAMU"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "rekening_id",
+      "value": ""
+    },
+    {
+      "key": "rekening_id_2",
+      "value": ""
+    },
+    {
+      "key": "transaction_id",
+      "value": ""
+    },
+    {
+      "key": "debt_id",
+      "value": ""
+    },
+    {
+      "key": "notification_id",
+      "value": ""
+    }
+  ]
+}
