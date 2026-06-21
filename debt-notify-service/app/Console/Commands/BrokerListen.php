@@ -85,12 +85,13 @@ class BrokerListen extends Command
                 case 'transaction.created':
                     $trxType = $payload['type'] ?? 'transaksi';
                     $amount = $payload['amount'] ?? 0;
-                    $typeStr = ($trxType === 'pemasukan') ? 'Pemasukan' : 'Pengeluaran';
+                    // Producer (transaction-service) mengirim type 'income' / 'expense'
+                    $typeStr = ($trxType === 'income') ? 'Pemasukan' : 'Pengeluaran';
                     $formattedAmount = number_format($amount, 0, ',', '.');
-                    
+
                     $title = 'Transaksi Baru';
                     $message = "{$typeStr} Rp {$formattedAmount} tercatat.";
-                    $type = ($trxType === 'pemasukan') ? 'success' : 'info';
+                    $type = ($trxType === 'income') ? 'success' : 'info';
                     break;
 
                 case 'transfer.completed':

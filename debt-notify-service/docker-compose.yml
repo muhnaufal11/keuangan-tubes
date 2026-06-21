@@ -68,6 +68,7 @@ services:
       - /var/www/html/vendor
       - /var/www/html/bootstrap/cache
     environment:
+      - RUN_MIGRATIONS=false
       - APP_ENV=local
       - APP_KEY=base64:m3o+1Lm3xFyQMU3CLlQH2tM+JTgiYOzqaN86R2IvJJg=
       - APP_DEBUG=true

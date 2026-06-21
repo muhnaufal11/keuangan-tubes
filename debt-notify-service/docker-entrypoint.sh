@@ -23,11 +23,19 @@ fi
 echo "==> Clearing stale caches..."
 php artisan optimize:clear || true
 
-echo "==> Running migrations..."
-php artisan migrate --force
+# Migrasi & seed hanya untuk container utama. Worker set RUN_MIGRATIONS=false (hindari race).
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+  echo "==> Running migrations..."
+  php artisan migrate --force
+  echo "==> Seeding default data..."
+  php artisan db:seed --force
+fi
 
-echo "==> Seeding default data..."
-php artisan db:seed --force
+# Kalau ada command (mis. worker: 'php artisan broker:listen'), jalankan ITU, bukan serve.
+if [ "$#" -gt 0 ]; then
+  echo "==> Running command: $*"
+  exec "$@"
+fi
 
 echo "==> Starting Laravel server..."
-php artisan serve --host=0.0.0.0 --port=8000
+exec php artisan serve --host=0.0.0.0 --port=8000
